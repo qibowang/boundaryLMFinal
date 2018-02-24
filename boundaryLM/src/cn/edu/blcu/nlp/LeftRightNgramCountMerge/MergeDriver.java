@@ -34,7 +34,7 @@ public class MergeDriver {
 		int index=0;
 		for (int i = 0; i < args.length; i++) {
 			
-			if (args[i].startsWith("-raw")) {
+			if (args[i].startsWith("-input")) {
 				inputPath = args[++i];
 				if(index<inputPaths.length){
 					inputPaths[index++]=inputPath;

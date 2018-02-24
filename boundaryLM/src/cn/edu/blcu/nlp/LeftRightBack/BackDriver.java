@@ -25,7 +25,6 @@ public class BackDriver {
 		String output="";
 		int tasks = 1;
 		int isLzo=0;
-		int order=3;
 		String lmFlag="";
 		int gtmin=0;
 		for(int i=0;i<args.length;i++){
@@ -41,9 +40,6 @@ public class BackDriver {
 			}else if(args[i].equals("-isLzo")){
 				isLzo = Integer.parseInt(args[++i]);
 				System.out.println("isLzo--->"+isLzo);
-			}else if(args[i].equals("-order")){
-				order = Integer.parseInt(args[++i]);
-				System.out.println("order--->"+order);
 			}else if(args[i].equals("-lmFlag")){
 				lmFlag=args[++i];
 				System.out.println("lmFlag--->"+lmFlag);
@@ -61,7 +57,6 @@ public class BackDriver {
 			Configuration conf = new Configuration();
 			conf.setBoolean("mapreduce.compress.map.output", true);
 			conf.setClass("mapreduce.map.output.compression.codec", LzoCodec.class, CompressionCodec.class);
-			conf.setInt("order", order);
 			conf.set("lmFlag", lmFlag);
 			conf.setInt("gtmin", gtmin);
 			Job probJob = Job.getInstance(conf,lmFlag+" back Job");

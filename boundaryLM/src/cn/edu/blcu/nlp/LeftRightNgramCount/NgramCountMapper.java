@@ -1,6 +1,7 @@
 package cn.edu.blcu.nlp.LeftRightNgramCount;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +10,8 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 
 
@@ -28,16 +29,16 @@ public class NgramCountMapper extends Mapper<LongWritable, Text, Text, IntWritab
 	private String needSuppStr;
 	private String preLine="";
 	
-	//private final char SEP_CHAR='▲';
-	//private final char NUM_CHAR='■';
-	//private final char CIRCULAR_CHAR='●';
+	private final char SEP_CHAR='▲';
+	private final char NUM_CHAR='■';
+	private final char CIRCULAR_CHAR='●';
 	
 	private final String SEP_STRING="▲";
 	private final String NUM_STRING="■";
 	private final String CIRCULAR_STRING="●";
 	
 	private List<String> list;
-	Logger log = LoggerFactory.getLogger(NgramCountMapper.class);
+	//Logger log = LoggerFactory.getLogger(NgramCountMapper.class);
 	
 	@Override
 	protected void setup(Context context)
@@ -49,18 +50,22 @@ public class NgramCountMapper extends Mapper<LongWritable, Text, Text, IntWritab
 	}
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+		try {
+			line = new String(value.getBytes(), 0, value.getLength(), "gbk");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		
-		line = value.toString();
 		line=processLine(line);
 		lineLen=line.length();
 		line=preLine+line;
+		//log.info("before replace--->"+line);
 		line = line.replaceAll("▲+", SEP_STRING);
 		line = line.replaceAll("■+", NUM_STRING);
 		line = line.replaceAll("●+", CIRCULAR_STRING);
-		
+		//log.info("after replace---->"+line);
 		lineLen=line.length();
 		
-		log.info("line--->"+line);
 		if(lineLen<endOrdert){
 			preLine=line;
 		}else{
@@ -68,10 +73,16 @@ public class NgramCountMapper extends Mapper<LongWritable, Text, Text, IntWritab
 				items=str.split("\t");
 				needSuppStr=items[0];
 				orderTemp=Integer.parseInt(items[1]);
-				log.info("before supp--->"+str);
+				//log.info("before supp--->"+str);
+				int tempIndex=0;//为了避免上一行的行尾和该行的行首都是标点
+				boolean tempBool1=needSuppStr.charAt(orderTemp-2)==SEP_CHAR&&line.charAt(0)==SEP_CHAR;
+				boolean tempBool2=needSuppStr.charAt(orderTemp-2)==NUM_CHAR&&line.charAt(0)==NUM_CHAR;
+				boolean tempBool3=needSuppStr.charAt(orderTemp-2)==CIRCULAR_CHAR&&line.charAt(0)==CIRCULAR_CHAR;
+				if(tempBool1||tempBool2||tempBool3)
+					tempIndex=1;
 				for(index=0;index<orderTemp-1;index++){
-					ngram=needSuppStr.substring(index)+line.substring(0,index+1);
-					log.info("after supp--->"+ngram);
+					ngram=needSuppStr.substring(index)+line.substring(tempIndex,index+tempIndex+1);
+					//log.info("after supp--->"+ngram);
 					resKey.set(ngram);
 					context.write(resKey, ONE);
 				}
@@ -81,6 +92,7 @@ public class NgramCountMapper extends Mapper<LongWritable, Text, Text, IntWritab
 			for(orderTemp=startOrder;orderTemp<=endOrdert;orderTemp++){
 				for(index=0;index<=lineLen-orderTemp;index++){
 					ngram = line.substring(index, index+orderTemp);
+					//log.info("ngram--->"+ngram);
 					resKey.set(ngram);
 					context.write(resKey, ONE);
 				}
@@ -91,7 +103,6 @@ public class NgramCountMapper extends Mapper<LongWritable, Text, Text, IntWritab
 			preLine="";
 			
 		}
-		
 	}
 	
 	
@@ -122,7 +133,6 @@ public class NgramCountMapper extends Mapper<LongWritable, Text, Text, IntWritab
 		
 		char[] cArr = line.toCharArray();
 		for (char ch : cArr) {
-			// if('\u4e00' <= ch <= '\u9fff')
 			if (ch >= '\u4e00' && ch <= '\u9fff')
 				sb.append(ch);
 			else if (ch == numSign)
@@ -132,7 +142,7 @@ public class NgramCountMapper extends Mapper<LongWritable, Text, Text, IntWritab
 			else if (ch == ' ')
 				sb.append(' ');
 			
-			else if (ch == ','||ch=='.'||ch=='?'||ch=='!'||ch==';'||ch==':'||ch=='?'||ch=='，'||ch=='。'||ch=='！'||ch=='？'||ch=='、'||ch=='；'||ch=='：')
+			else if (ch == ','||ch=='.'||ch=='?'||ch=='!'||ch==';'||ch==':'||ch=='，'||ch=='。'||ch=='！'||ch=='？'||ch=='；'||ch=='：')
 				sb.append(triangleSign);
 			else
 				sb.append(circularSign);

@@ -24,7 +24,7 @@ public class BackMapper extends Mapper<Text, LongWritable, Text, Text> {
 	private final char CIRCULAR_CHAR='●';
 	private String ngram;
 	private int wordsNum;
-	private int order = 3;
+
 	private String lmFlag = "";
 
 	private Logger log = LoggerFactory.getLogger(BackMapper.class);
@@ -32,7 +32,6 @@ public class BackMapper extends Mapper<Text, LongWritable, Text, Text> {
 	protected void setup(Mapper<Text, LongWritable, Text, Text>.Context context)
 			throws IOException, InterruptedException {
 		Configuration conf = context.getConfiguration();
-		order = conf.getInt("order", order);
 		lmFlag = conf.get("lmFlag");
 	}
 

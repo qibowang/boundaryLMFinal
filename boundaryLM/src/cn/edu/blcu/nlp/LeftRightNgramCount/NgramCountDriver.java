@@ -35,7 +35,7 @@ public class NgramCountDriver {
 			if (args[i].equals("-input")) {
 				input = args[++i];
 				System.out.println("input--->" + input);
-			} else if (args[i].equals("-rawcount")) {
+			} else if (args[i].equals("-ngramCount")) {
 				rawCountPath = args[++i];
 				System.out.println("rawCountPath--->" + rawCountPath);
 			} else if (args[i].equals("-startOrder")) {
@@ -71,7 +71,7 @@ public class NgramCountDriver {
 			conf.setBoolean("mapreduce.compress.map.output", true);
 			conf.setClass("mapreduce.map.output.compression.codec", LzoCodec.class, CompressionCodec.class);
 
-			Job rawCountJob = Job.getInstance(conf, "cross line rawCountJob");
+			Job rawCountJob = Job.getInstance(conf, "ngram count job");
 			System.out.println(rawCountJob.getJobName() + " is running!!!");
 			rawCountJob.setJarByClass(NgramCountDriver.class);
 
