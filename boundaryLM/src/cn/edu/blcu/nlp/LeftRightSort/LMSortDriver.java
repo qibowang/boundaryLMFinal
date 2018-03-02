@@ -46,7 +46,8 @@ public class LMSortDriver {
 			Configuration conf = new Configuration();
 			conf.setBoolean("mapreduce.compress.map.output", true);
 			conf.setClass("mapreduce.map.output.compression.codec", LzoCodec.class, CompressionCodec.class);
-
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.enable", "true");
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.policy", "NEVER");
 			Job sortJob = Job.getInstance(conf, lmFlag + " sort Job");
 			System.out.println(sortJob.getJobName() + " is running!");
 			sortJob.setJarByClass(LMSortDriver.class);

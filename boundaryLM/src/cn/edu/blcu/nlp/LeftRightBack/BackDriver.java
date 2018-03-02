@@ -57,6 +57,8 @@ public class BackDriver {
 			Configuration conf = new Configuration();
 			conf.setBoolean("mapreduce.compress.map.output", true);
 			conf.setClass("mapreduce.map.output.compression.codec", LzoCodec.class, CompressionCodec.class);
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.enable", "true");
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.policy", "NEVER");
 			conf.set("lmFlag", lmFlag);
 			conf.setInt("gtmin", gtmin);
 			Job probJob = Job.getInstance(conf,lmFlag+" back Job");

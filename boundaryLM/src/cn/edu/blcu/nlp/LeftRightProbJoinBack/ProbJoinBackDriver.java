@@ -59,6 +59,8 @@ public class ProbJoinBackDriver {
 			Configuration conf = new Configuration();
 			conf.setBoolean("mapreduce.compress.map.output", true);
 			conf.setClass("mapreduce.map.output.compression.codec", LzoCodec.class, CompressionCodec.class);
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.enable", "true");
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.policy", "NEVER");
 			conf.set("lmFlag", lmFlag);
 			Job probJoinProbJob = Job.getInstance(conf, "prob join back job");
 			

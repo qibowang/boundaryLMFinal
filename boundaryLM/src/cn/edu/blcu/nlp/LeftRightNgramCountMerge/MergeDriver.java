@@ -63,10 +63,13 @@ public class MergeDriver {
 			Configuration conf = new Configuration();
 			
 			
-			
-			
 			conf.setBoolean("mapreduce.compress.map.output", true);
 			conf.setClass("mapreduce.map.output.compression.codec", LzoCodec.class, CompressionCodec.class);
+			
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.enable", "true");
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.policy", "NEVER");
+			
+			
 			FileSystem fs = FileSystem.get(conf);
 			
 			fs = FileSystem.get(conf);
@@ -91,6 +94,7 @@ public class MergeDriver {
 			
 			for(String path:inputPaths){
 				if(path!=null){
+					System.out.println("input path--->"+path);
 					FileInputFormat.addInputPath(mergeJob, new Path(path));
 				}
 			}

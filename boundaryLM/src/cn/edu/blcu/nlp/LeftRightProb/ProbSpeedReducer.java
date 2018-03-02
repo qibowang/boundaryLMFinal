@@ -36,6 +36,7 @@ public class ProbSpeedReducer extends Reducer<Text, Text, Text, Text> {
 	@Override
 	protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 		long rawCountSum = 0l;
+		boolean flag=false;
 		Configuration conf = context.getConfiguration();
 		List<Text> list = new ArrayList<Text>();
 		if (lmFlag.equalsIgnoreCase("right")) {
@@ -47,6 +48,7 @@ public class ProbSpeedReducer extends Reducer<Text, Text, Text, Text> {
 				rawCountSum += rawcount;
 				if (ngram.charAt(0) == SEPARATOR) {
 					list.add(WritableUtils.clone(value, conf));
+					flag=true;
 				}
 			}
 		} else if (lmFlag.equalsIgnoreCase("left")) {
@@ -59,6 +61,7 @@ public class ProbSpeedReducer extends Reducer<Text, Text, Text, Text> {
 				rawCountSum += rawcount;
 				if (ngram.charAt(wordsNum - 1) == SEPARATOR) {
 					list.add(WritableUtils.clone(value, conf));
+					flag=true;
 				}
 			}
 		} else {
@@ -66,18 +69,21 @@ public class ProbSpeedReducer extends Reducer<Text, Text, Text, Text> {
 		}
 
 		// log.info("---prob Speed---");
-		for (Text value : list) {
-			valueStr = value.toString();
-			items = valueStr.split("\t");
-			ngram = items[0];
-			rawcount = Long.parseLong(items[1]);
-			if (rawcount >= gtmin) {
-				resKey.set(ngram);
-				// log.info("ngram===>"+ngram);
-				// log.info("speed porb--->"+rawcount+"\t"+rawCountSum);
-				resValue.set(Math.log10((double) rawcount / rawCountSum) + "\t" + rawcount);
-				context.write(resKey, resValue);
+		if(flag){
+			for (Text value : list) {
+				valueStr = value.toString();
+				items = valueStr.split("\t");
+				ngram = items[0];
+				rawcount = Long.parseLong(items[1]);
+				if (rawcount >= gtmin) {
+					resKey.set(ngram);
+					// log.info("ngram===>"+ngram);
+					// log.info("speed porb--->"+rawcount+"\t"+rawCountSum);
+					resValue.set(Math.log10((double) rawcount / rawCountSum) + "\t" + rawcount);
+					context.write(resKey, resValue);
+				}
 			}
 		}
+		
 	}
 }

@@ -70,7 +70,8 @@ public class NgramCountDriver {
 
 			conf.setBoolean("mapreduce.compress.map.output", true);
 			conf.setClass("mapreduce.map.output.compression.codec", LzoCodec.class, CompressionCodec.class);
-
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.enable", "true");
+			conf.set("dfs.client.block.write.replace-datanode-on-failure.policy", "NEVER");
 			Job rawCountJob = Job.getInstance(conf, "ngram count job");
 			System.out.println(rawCountJob.getJobName() + " is running!!!");
 			rawCountJob.setJarByClass(NgramCountDriver.class);
