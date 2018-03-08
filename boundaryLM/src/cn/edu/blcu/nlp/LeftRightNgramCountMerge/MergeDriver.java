@@ -32,6 +32,9 @@ public class MergeDriver {
 		int isLzo = 0;// 等于0表示压缩
 
 		int index=0;
+		int startOrder=8;
+		int endOrder=8;
+		
 		for (int i = 0; i < args.length; i++) {
 			
 			if (args[i].startsWith("-input")) {
@@ -51,7 +54,13 @@ public class MergeDriver {
 			}  else if (args[i].equals("-isLzo")) {
 				isLzo = Integer.parseInt(args[++i]);
 				System.out.println("isLzo---->" + isLzo);
-			}  else {
+			}  else if(args[i].equals("-startOrder")){
+				startOrder=Integer.parseInt(args[++i]);
+				System.out.println("startOrder--->"+startOrder);
+			}else if(args[i].equals("-endOrder")){
+				endOrder=Integer.parseInt(args[++i]);
+				System.out.println("endOrder--->"+endOrder);
+			}else {
 				System.out.println("there exists invalid parameters--->" + args[i]);
 				break;
 			}
@@ -69,6 +78,8 @@ public class MergeDriver {
 			conf.set("dfs.client.block.write.replace-datanode-on-failure.enable", "true");
 			conf.set("dfs.client.block.write.replace-datanode-on-failure.policy", "NEVER");
 			
+			conf.setInt("startOrder", startOrder);
+			conf.setInt("endOrder", endOrder);
 			
 			FileSystem fs = FileSystem.get(conf);
 			
