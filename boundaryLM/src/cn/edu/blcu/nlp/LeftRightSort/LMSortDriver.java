@@ -22,10 +22,18 @@ public class LMSortDriver {
 		String lmFlag = "middle";
 		boolean parameterValid = false;
 		int parameters = args.length;
+		String inputPaths[]=new String[10];
+		int index=0;
 		for (int i = 0; i < parameters; i++) {
 			if (args[i].equals("-input")) {
 				input = args[++i];
+				if(index<inputPaths.length){
+					inputPaths[index++]=input;
+				}else{
+					System.out.println("input paths are more than 10 please build the jar file again");
+				}
 				System.out.println("input--->" + input);
+				
 			} else if (args[i].equals("-output")) {
 				output = args[++i];
 				System.out.println("output--->" + output);
@@ -62,7 +70,13 @@ public class LMSortDriver {
 			sortJob.setOutputKeyClass(Text.class);
 			sortJob.setOutputValueClass(Text.class);
 
-			FileInputFormat.addInputPath(sortJob, new Path(input));
+			for(String path:inputPaths){
+				if(path!=null){
+					System.out.println("input path--->"+path);
+					FileInputFormat.addInputPath(sortJob, new Path(path));
+				}
+			}
+			
 			FileInputFormat.setInputDirRecursive(sortJob, true);
 			FileSystem fs = FileSystem.get(conf);
 			Path outputPath = new Path(output);

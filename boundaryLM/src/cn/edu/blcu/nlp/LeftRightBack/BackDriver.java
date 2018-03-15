@@ -104,11 +104,11 @@ public class BackDriver {
 			e.printStackTrace();
 		}
 	}
-	
 	public static void setLzo(Job job) {
 		SequenceFileOutputFormat.setCompressOutput(job, true);
 		SequenceFileOutputFormat.setOutputCompressionType(job, CompressionType.BLOCK);
 		SequenceFileOutputFormat.setOutputCompressorClass(job, LzoCodec.class);
 	}
 
+	
 }
